@@ -4,9 +4,9 @@ import com.springboot.mswebsocketdemo.constant.UserStatusEnum;
 import com.springboot.mswebsocketdemo.entity.User;
 import com.springboot.mswebsocketdemo.repository.UserRepository;
 import com.springboot.mswebsocketdemo.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.FindException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(User user) {
-        user.setStatus(UserStatusEnum.ONLINE);
         Optional.of(user)
                 .map(this::validateAlreadyExists)
                 .map(userRepository::save);
@@ -29,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void disconnect(User user) {
-        var storedUser = userRepository.findById(user.getNickName()).orElse(null);
+        var storedUser = userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName()).orElse(null);
         if (storedUser != null) {
             storedUser.setStatus(UserStatusEnum.OFFLINE);
             userRepository.save(storedUser);
@@ -47,10 +46,11 @@ public class UserServiceImpl implements UserService {
      * @return the user
      */
     private User validateAlreadyExists(User user){
-        userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName())
-                .ifPresent(given ->{
-                    throw new FindException("User already exists!");
-                });
+        Optional<User> savedUser = userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName());
+
+        savedUser.ifPresent(given -> BeanUtils.copyProperties(given, user));
+
+        user.setStatus(UserStatusEnum.ONLINE);
         return user;
     }
 }

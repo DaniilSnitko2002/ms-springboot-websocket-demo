@@ -33,7 +33,7 @@ function connect(event) {
 
 function onConnected() {
     stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
-    stompClient.subscribe(`/user/public`, onMessageReceived);
+    stompClient.subscribe(`/user/topic/public`, onMessageReceived);
 
     // register the connected user
     stompClient.send("/app/user.addUser",
@@ -144,7 +144,7 @@ function sendMessage(event) {
             content: messageInput.value.trim(),
             timestamp: new Date()
         };
-        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         displayMessage(nickname, messageInput.value.trim());
         messageInput.value = '';
     }

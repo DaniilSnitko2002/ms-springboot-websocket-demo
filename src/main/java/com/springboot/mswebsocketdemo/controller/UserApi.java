@@ -12,11 +12,11 @@ import java.util.List;
 public interface UserApi {
 
     @MessageMapping("/user.addUser")
-    @SendTo("/user/public")
+    @SendTo("/user/topic/public")
     User addUser(@Payload User user);
 
     @MessageMapping("/user.disconnectUser")
-    @SendTo("/user/public")
+    @SendTo("/user/topic/public")
     User disconnectUser(@Payload User user);
 
     @GetMapping("/users")

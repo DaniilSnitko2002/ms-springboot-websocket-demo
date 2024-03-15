@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ChatApi {
 
-    @MessageMapping("/chat")
+    @MessageMapping("/chat.sendMessage")
     void processMessage(@Payload ChatMessage chatMessage);
 
     @GetMapping("/messages/{senderId}/{recipientId}")
