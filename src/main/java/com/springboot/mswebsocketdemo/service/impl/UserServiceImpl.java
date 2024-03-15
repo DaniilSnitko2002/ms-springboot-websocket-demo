@@ -6,6 +6,7 @@ import com.springboot.mswebsocketdemo.repository.UserRepository;
 import com.springboot.mswebsocketdemo.service.UserService;
 import org.springframework.stereotype.Service;
 
+import java.lang.module.FindException;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     public void saveUser(User user) {
         user.setStatus(UserStatusEnum.ONLINE);
         Optional.of(user)
+                .map(this::validateAlreadyExists)
                 .map(userRepository::save);
     }
 
@@ -37,5 +39,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findConnectedUsers() {
         return userRepository.findAllByStatus(UserStatusEnum.ONLINE);
+    }
+
+    /**
+     * Method to check if a user already exists
+     * @param user the user
+     * @return the user
+     */
+    private User validateAlreadyExists(User user){
+        userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName())
+                .ifPresent(given ->{
+                    throw new FindException("User already exists!");
+                });
+        return user;
     }
 }
