@@ -16,11 +16,21 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatRoomService chatRoomService;
 
+    /**
+     * The Constructor
+     * @param chatMessageRepository the ChatMessage repository
+     * @param chatRoomService the ChatRoom Service
+     */
     public ChatMessageServiceImpl(ChatMessageRepository chatMessageRepository, ChatRoomService chatRoomService) {
         this.chatMessageRepository = chatMessageRepository;
         this.chatRoomService = chatRoomService;
     }
 
+    /**
+     * Saves a message
+     * @param chatMessage the chat message
+     * @return a ChatMessage
+     */
     @Override
     public ChatMessage save(ChatMessage chatMessage) {
         var chatId = chatRoomService
@@ -32,6 +42,12 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     }
 
+    /**
+     * Find a chat messages
+     * @param senderId the sender id
+     * @param recipientId the recipient id
+     * @return a List of ChatMessage
+     */
     @Override
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         var chatId = chatRoomService.getChatRoomId(senderId, recipientId, false);

@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "users")
 public class User {
+
     /**
      * The id
      */
@@ -37,6 +38,12 @@ public class User {
     @NotBlank(message = "fullName is mandatory")
     @Column(name = "full_name")
     private String fullName;
+
+    /**
+     * The devicesInUse
+     */
+    @Column(name = "devices_in_use")
+    private int devicesInUse = 1;
 
     /**
      * The status

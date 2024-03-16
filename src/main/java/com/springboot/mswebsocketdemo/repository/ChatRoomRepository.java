@@ -9,5 +9,11 @@ import java.util.Optional;
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
 
+    /**
+     * Find the chatroom by the 2 users
+     * @param senderId the sender id
+     * @param recipientId the recipient id
+     * @return the ChatRoom
+     */
     Optional<ChatRoom> findBySenderIdAndRecipientId(String senderId, String recipientId);
 }

@@ -45,11 +45,16 @@ function onConnected() {
 }
 
 async function findAndDisplayConnectedUsers() {
-    const connectedUsersResponse = await fetch('/users');
-    let connectedUsers = await connectedUsersResponse.json();
-    connectedUsers = connectedUsers.filter(user => user.nickName !== nickname);
+    const usersResponse = await fetch('/users');
+    let users = await usersResponse.json();
+    let connectedUsers = users.filter(user => user.nickName !== nickname && user.status == 'ONLINE');
+    let disconnectedUsers = users.filter(user => user.nickName !== nickname && user.status == 'OFFLINE');
+
     const connectedUsersList = document.getElementById('connectedUsers');
     connectedUsersList.innerHTML = '';
+
+    const disconnectedUsersList = document.getElementById('disconnectedUsers');
+    disconnectedUsersList.innerHTML = '';
 
     connectedUsers.forEach(user => {
         appendUserElement(user, connectedUsersList);
@@ -59,6 +64,15 @@ async function findAndDisplayConnectedUsers() {
             connectedUsersList.appendChild(separator);
         }
     });
+
+    disconnectedUsers.forEach(user => {
+            appendUserElement(user, disconnectedUsersList);
+            if (disconnectedUsers.indexOf(user) < disconnectedUsers.length - 1) {
+                const separator = document.createElement('li');
+                separator.classList.add('separator');
+                disconnectedUsersList.appendChild(separator);
+            }
+        });
 }
 
 function appendUserElement(user, connectedUsersList) {

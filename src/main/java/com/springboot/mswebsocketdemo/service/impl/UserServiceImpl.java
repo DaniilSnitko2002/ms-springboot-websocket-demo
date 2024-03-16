@@ -15,10 +15,18 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    /**
+     * The Constructor
+     * @param userRepository the user repository
+     */
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Saves a user in the DDBB
+     * @param user the User
+     */
     @Override
     public void saveUser(User user) {
         Optional.of(user)
@@ -26,18 +34,30 @@ public class UserServiceImpl implements UserService {
                 .map(userRepository::save);
     }
 
+    /**
+     * Disconnects a user
+     * @param user the User
+     */
     @Override
     public void disconnect(User user) {
-        var storedUser = userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName()).orElse(null);
-        if (storedUser != null) {
-            storedUser.setStatus(UserStatusEnum.OFFLINE);
-            userRepository.save(storedUser);
-        }
+        Optional<User> storedUser = userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName());
+        storedUser.ifPresent(given -> {
+            int devicesInUse = given.getDevicesInUse();
+            given.setDevicesInUse(devicesInUse-1);
+            if(given.getDevicesInUse() == 0){
+                given.setStatus(UserStatusEnum.OFFLINE);
+            }
+            userRepository.save(given);
+        });
     }
 
+    /**
+     * Finds all the users in the app
+     * @return a List of Users
+     */
     @Override
-    public List<User> findConnectedUsers() {
-        return userRepository.findAllByStatus(UserStatusEnum.ONLINE);
+    public List<User> findUsers() {
+        return userRepository.findAll();
     }
 
     /**
@@ -47,8 +67,10 @@ public class UserServiceImpl implements UserService {
      */
     private User validateAlreadyExists(User user){
         Optional<User> savedUser = userRepository.findByNickNameAndFullName(user.getNickName(), user.getFullName());
-
-        savedUser.ifPresent(given -> BeanUtils.copyProperties(given, user));
+        savedUser.ifPresent(given -> {
+            given.setDevicesInUse(given.getDevicesInUse()+1);
+            BeanUtils.copyProperties(given, user);
+        });
 
         user.setStatus(UserStatusEnum.ONLINE);
         return user;

@@ -17,11 +17,20 @@ public class ChatApiController implements ChatApi {
 
     private final ChatMessageService chatMessageService;
 
+    /**
+     * The Constructor
+     * @param messagingTemplate the messaging template
+     * @param chatMessageService the chat message service
+     */
     public ChatApiController(SimpMessagingTemplate messagingTemplate, ChatMessageService chatMessageService) {
         this.messagingTemplate = messagingTemplate;
         this.chatMessageService = chatMessageService;
     }
 
+    /**
+     * Process the message and send it to the subscribed clients
+     * @param chatMessage the chat message
+     */
     @Override
     public void processMessage(ChatMessage chatMessage) {
         ChatMessage savedMsg = chatMessageService.save(chatMessage);
@@ -37,6 +46,12 @@ public class ChatApiController implements ChatApi {
 
     }
 
+    /**
+     * Finds the chat messages
+     * @param senderId the sender id
+     * @param recipientId the recipient id
+     * @return a list of the messages
+     */
     @Override
     public ResponseEntity<List<ChatMessage>> findChatMessages(String senderId, String recipientId) {
         return ResponseEntity

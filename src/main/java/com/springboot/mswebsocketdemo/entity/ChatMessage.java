@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "chat_message")
 public class ChatMessage {
+
     /**
      * The id
      */

@@ -12,10 +12,21 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
+    /**
+     * The Constructor
+     * @param chatRoomRepository the ChatRoom repository
+     */
     public ChatRoomServiceImpl(ChatRoomRepository chatRoomRepository) {
         this.chatRoomRepository = chatRoomRepository;
     }
 
+    /**
+     * Get the ChatRoom id
+     * @param senderId the sender id
+     * @param recipientId the recipient id
+     * @param createNewRoomIfNotExists a boolean that controls whether a room should be created or not
+     * @return a String
+     */
     @Override
     public Optional<String> getChatRoomId(String senderId, String recipientId, boolean createNewRoomIfNotExists) {
         return chatRoomRepository
@@ -31,6 +42,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 });
     }
 
+    /**
+     * Create a chat id
+     * @param senderId the sender id
+     * @param recipientId the recipient id
+     * @return a String
+     */
     @Override
     public String createChatId(String senderId, String recipientId) {
         var chatId = String.format("%s_%s", senderId, recipientId);
