@@ -5,8 +5,14 @@ One On One Chat application | Spring boot & WebSocket
 ### Key Features
 
 - **Chat application**: Provides a one to one chat
+- **Real-time Messaging**: Allows users to send and receive instant messages, creating a dynamic and engaging conversation experience.
 
 # Getting Started
+
+### Development Server
+You'll need a file editor that supports Java (I recommend Intellij). Then you can go to the main application file and run the application with the ▶️ button
+
+If you want to debug the application you'll need to create break point in app and run the app with the bug icon button
 
 ### Reference Documentation
 For further reference, please consider the following sections:
