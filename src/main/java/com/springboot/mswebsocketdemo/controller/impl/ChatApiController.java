@@ -43,7 +43,15 @@ public class ChatApiController implements ChatApi {
                         savedMsg.getContent()
                 )
         );
-
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getSenderId(), "/queue/messages",
+                new ChatNotificationDto(
+                        savedMsg.getId(),
+                        savedMsg.getSenderId(),
+                        savedMsg.getRecipientId(),
+                        savedMsg.getContent()
+                )
+        );
     }
 
     /**

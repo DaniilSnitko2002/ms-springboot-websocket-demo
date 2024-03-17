@@ -32,19 +32,19 @@ function connect(event) {
 
 
 function onConnected() {
-    stompClient.subscribe(`/user/${nickname}/queue/messages`, onMessageReceived);
-    stompClient.subscribe(`/user/topic/public`, onMessageReceived);
+    stompClient.subscribe(`/user/${nickname}/queue/messages`, onNewMessage);
+    stompClient.subscribe(`/user/topic/public`, findAndDisplayUsers);
 
-    // register the connected user
+    // register/authenticate the connected user
     stompClient.send("/app/user.addUser",
         {},
         JSON.stringify({nickName: nickname, fullName: fullname, status: 'ONLINE'})
     );
     document.querySelector('#connected-user-fullname').textContent = fullname;
-    findAndDisplayConnectedUsers().then();
+    findAndDisplayUsers().then();
 }
 
-async function findAndDisplayConnectedUsers() {
+async function findAndDisplayUsers() {
     const usersResponse = await fetch('/users');
     let users = await usersResponse.json();
     let connectedUsers = users.filter(user => user.nickName !== nickname && user.status == 'ONLINE');
@@ -149,7 +149,7 @@ function onError() {
 }
 
 
-function sendMessage(event) {
+function onSendMessage(event) {
     const messageContent = messageInput.value.trim();
     if (messageContent && stompClient) {
         const chatMessage = {
@@ -159,19 +159,16 @@ function sendMessage(event) {
             timestamp: new Date()
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-        displayMessage(nickname, messageInput.value.trim());
         messageInput.value = '';
     }
-    chatArea.scrollTop = chatArea.scrollHeight;
     event.preventDefault();
 }
 
 
-async function onMessageReceived(payload) {
-    await findAndDisplayConnectedUsers();
+async function onNewMessage(payload) {
     console.log('Message received', payload);
     const message = JSON.parse(payload.body);
-    if (selectedUserId && selectedUserId === message.senderId) {
+    if (selectedUserId) {
         displayMessage(message.senderId, message.content);
         chatArea.scrollTop = chatArea.scrollHeight;
     }
@@ -190,15 +187,24 @@ async function onMessageReceived(payload) {
     }
 }
 
+function resetPageValues(){
+    stompClient = null;
+    nickname = null;
+    fullname = null;
+    selectedUserId = null;
+    usernamePage.classList.remove('hidden');
+    chatPage.classList.add('hidden');
+}
+
 function onLogout() {
     stompClient.send("/app/user.disconnectUser",
         {},
         JSON.stringify({nickName: nickname, fullName: fullname, status: 'OFFLINE'})
     );
-    window.location.reload();
+    resetPageValues();
 }
 
 usernameForm.addEventListener('submit', connect, true); // step 1
-messageForm.addEventListener('submit', sendMessage, true);
+messageForm.addEventListener('submit', onSendMessage, true);
 logout.addEventListener('click', onLogout, true);
 window.onbeforeunload = () => onLogout();
